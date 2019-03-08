@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from clone.prepare_data import DataHandler
-from clone.model_build import RecModel
+from prepare_data import DataHandler
+from model_build import RecModel
 from keras import backend as K
 
 def main():
