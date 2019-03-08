@@ -20,7 +20,7 @@ from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from keras.metrics import top_k_categorical_accuracy
-from clone.custom_layer import AttentionRNN, SelfAttention, top_10_CCE
+from custom_layer import AttentionRNN, SelfAttention, top_10_CCE
 
 class RecModel(object):
     def __init__(self, batch_size, max_length, n_hidden_units,
