@@ -46,7 +46,7 @@ class RecModel(object):
         attention_out = AttentionRNN(self.n_hidden_units, input_shape=(self.max_length, self.n_hidden_units), dropout=0.2,
                                       name='attention')(embedding)
         '''
-        self_rnn_out=Self_RNN(self.n_hidden_units, input_shape=(self.max_length,self.n_hidden_units), name='Self_RNN')(embedding)
+        self_rnn_out=Self_RNN(self.n_hidden_units, input_shape=(self.max_length,self.n_hidden_units), dropout=0.2, name='Self_RNN')(embedding)
         # print(attention_out.shape)
         # self_out = SelfAttention(n_hidden_units, name='self_attention')(embedding)
         # out=Concatenate(axis=-1)([attention_out,self_out])
