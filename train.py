@@ -9,7 +9,7 @@ def main():
     n_movies = 3706
     n_genres = 18
     n_hidden_units=80
-    train_epochs = 20
+    train_epochs = 50
 
     dataset = DataHandler(batch_size, max_length, n_movies, n_genres)
     training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data()
