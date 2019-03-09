@@ -90,7 +90,7 @@ class DataHandler(object):
                 if not test:
                     # print('next')
                     # print(sequence)
-                    seq_lengths = sorted(random.sample(range(5, len(sequence) - 1),
+                    seq_lengths = sorted(random.sample(range(5, len(sequence)),
                                                        min([batch_size - j,
                                                             len(sequence) - 2,
                                                             max_reuse_sequence])))
