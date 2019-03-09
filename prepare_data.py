@@ -76,7 +76,7 @@ class DataHandler(object):
         return (X, Y)
 
     def gen_mini_batch(self, sequence_generator, test=False, max_reuse_sequence=np.inf):
-        batch_size = 16
+        batch_size = self.batch_size
         while True:
             j = 0
             sequences = []
@@ -90,7 +90,7 @@ class DataHandler(object):
                 if not test:
                     # print('next')
                     # print(sequence)
-                    seq_lengths = sorted(random.sample(range(2, len(sequence) - 1),
+                    seq_lengths = sorted(random.sample(range(5, len(sequence) - 1),
                                                        min([batch_size - j,
                                                             len(sequence) - 2,
                                                             max_reuse_sequence])))
