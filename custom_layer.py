@@ -188,3 +188,72 @@ class SelfAttention(Layer):
 
 def top_10_CCE(y_true, y_pred):
     return top_k_categorical_accuracy(y_true, y_pred, k=10)
+
+
+class Self_RNN(Layer):
+
+    def __init__(self, units, dropout=0., **kwargs):
+        self.units = units # 输出维度
+        self.dropout = min(1., max(0., dropout))
+        super(Self_RNN, self).__init__(**kwargs)
+    
+    def build(self, input_shape): # 定义可训练参数
+        self.query_kernel = self.add_weight(name='query_kernel',
+                                      shape=(input_shape[-1], self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        self.key_kernel = self.add_weight(name='key_kernel',
+                                      shape=(input_shape[-1], self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        self.value_kernel = self.add_weight(name='value_kernel',
+                                      shape=(input_shape[-1], self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        print('input_shape',input_shape)
+
+    def step_do(self, step_in, states): # 定义每一步的迭代
+        
+        in_value = step_in
+        if 0 < self.dropout < 1.:
+            self._dropout_mask = K.in_train_phase(K.dropout(K.ones_like(step_in), self.dropout), K.ones_like(step_in))
+        if 0 < self.dropout < 1.:
+            in_value = step_in * self._dropout_mask
+        
+        first = K.expand_dims(states[0],axis=-2)
+        second = K.expand_dims(states[1],axis=-2)
+        third = K.expand_dims(in_value,axis=-2)
+        inp = K.concatenate([first,second,third], axis=-2)
+        
+        print(self.query_kernel.shape)
+        print('inp',inp.shape)
+        query=K.dot(inp, self.query_kernel)
+        print('query', query.shape)
+        
+        key=K.permute_dimensions(K.dot(inp, self.key_kernel),(0,2,1))
+        print('key', key.shape)
+        
+        value=K.dot(inp, self.value_kernel)
+        print('value', value.shape)
+        
+        attention_prob=K.batch_dot(key, query, axes=[1, 2])/np.sqrt(self.units)
+        attention_prob = K.softmax(attention_prob)
+        print(attention_prob.shape)
+        print(inputs.shape)
+        outputs = K.batch_dot(attention_prob, value)
+        print(outputs.shape)
+        return outputs[:,-1], [outputs[:,-1], step_in]
+    
+    def call(self, inputs): # 定义正式执行的函数
+        
+        init_states = [K.zeros((K.shape(inputs)[0],self.units)), K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1]))] # 定义初始态(全零)
+        print('inputs',K.shape(inputs)[0])
+        outputs = K.rnn(self.step_do, inputs, init_states, unroll=False) # 循环执行step_do函数
+        #print('outputs',outputs[0].shape)
+        return outputs[0]
+    
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], self.units)
