@@ -20,7 +20,7 @@ from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from keras.metrics import top_k_categorical_accuracy
-from custom_layer import AttentionRNN, SelfAttention, top_10_CCE
+from custom_layer import AttentionRNN, SelfAttention, Self_RNN, top_10_CCE
 
 class RecModel(object):
     def __init__(self, batch_size, max_length, n_hidden_units,
@@ -42,13 +42,15 @@ class RecModel(object):
         print(embedding.shape)
         # res = Reshape((max_length//slice_k,slice_k,n_hidden_units))(embedding)
         # print(embedding.shape)
+        '''
         attention_out = AttentionRNN(self.n_hidden_units, input_shape=(self.max_length, self.n_hidden_units), dropout=0.2,
                                       name='attention')(embedding)
-        # attention_out=My_RNN(n_hidden_units, input_shape=(max_length//slice_k,slice_k,n_hidden_units), name='attention')(embedding)
+        '''
+        self_rnn_out=Self_RNN(n_hidden_units, input_shape=(max_length,n_hidden_units), name='Self_RNN')(embedding)
         # print(attention_out.shape)
         # self_out = SelfAttention(n_hidden_units, name='self_attention')(embedding)
         # out=Concatenate(axis=-1)([attention_out,self_out])
-        out = Dense(self.n_movies, activation='softmax', name='out')(attention_out)
+        out = Dense(self.n_movies, activation='softmax', name='out')(self_rnn_out)
         self.final_model = Model(input=inputs, output=out)
         return self.final_model
 
