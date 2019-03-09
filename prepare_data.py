@@ -110,8 +110,8 @@ class DataHandler(object):
                 yield self.prepare_input(sequences)
 
     def get_train_data(self):
-        train_data, n_train_user = self.load_data('../data/train_set_sequences')
-        val_data, n_val_user = self.load_data('../data/val_set_sequences')
+        train_data, n_train_user = self.load_data('./data/train_set_sequences')
+        val_data, n_val_user = self.load_data('./data/val_set_sequences')
         training_set = self.gen_mini_batch(self.sequence_generator(train_data))
         validation_set = self.gen_mini_batch(self.sequence_generator(val_data))
         return training_set, validation_set, n_train_user, n_val_user
