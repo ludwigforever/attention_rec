@@ -44,7 +44,7 @@ def main():
 
 
     def quit(signum, frame):
-        print ''
+        print ('')
         print 'stop fusion'
         sys.exit()
     
