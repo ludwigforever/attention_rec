@@ -1,10 +1,10 @@
-from clone.prepare_data import DataHandler
-from clone.model_build import RecModel
+from prepare_data import DataHandler
+from model_build import RecModel
 import keras
 from keras import backend as K
 
 def main():
-    batch_size = 16
+    batch_size = 15
     max_length = 24
     n_movies = 3706
     n_genres = 18
