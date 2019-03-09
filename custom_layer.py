@@ -256,3 +256,6 @@ class Self_RNN(Layer):
     
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.units)
+
+def top_10_CCE(y_true,y_pred):
+  return top_k_categorical_accuracy(y_true,y_pred,k=10)
