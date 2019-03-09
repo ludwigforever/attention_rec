@@ -2,6 +2,8 @@ from prepare_data import DataHandler
 from model_build import RecModel
 import keras
 from keras import backend as K
+import sys
+import signal
 
 def main():
     batch_size = 15
@@ -41,16 +43,17 @@ def main():
         return K.get_value(finalmodel.optimizer.lr)
 
 
-    model_class.train(finalmodel, training_set, validation_set, scheduler)
-
-
-def exit(signum, frame):
-        print('You choose to stop me.')
-        exit()
-    signal.signal(signal.SIGINT, exit)
-    signal.signal(signal.SIGTERM, exit)
-    while 1:
-        pass
+    def quit(signum, frame):
+        print ''
+        print 'stop fusion'
+        sys.exit()
+    
+    
+    signal.signal(signal.SIGINT, quit)                                
+    signal.signal(signal.SIGTERM, quit)
+    
+    while True:
+        model_class.train(finalmodel, training_set, validation_set, scheduler)
 
 
 if __name__ == '__main__':
