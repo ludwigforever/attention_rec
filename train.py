@@ -44,5 +44,14 @@ def main():
     model_class.train(finalmodel, training_set, validation_set, scheduler)
 
 
+def exit(signum, frame):
+        print('You choose to stop me.')
+        exit()
+    signal.signal(signal.SIGINT, exit)
+    signal.signal(signal.SIGTERM, exit)
+    while 1:
+        pass
+
+
 if __name__ == '__main__':
     main()
