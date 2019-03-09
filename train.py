@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
-from prepare_data import DataHandler
-from model_build import RecModel, RecommendModel
+from clone.prepare_data import DataHandler
+from clone.model_build import RecModel
+import keras
 from keras import backend as K
 
 def main():
-    batch_size = 15
+    batch_size = 16
     max_length = 24
     n_movies = 3706
     n_genres = 18
@@ -14,15 +14,14 @@ def main():
     dataset = DataHandler(batch_size, max_length, n_movies, n_genres)
     training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data()
 
-    finalmodel = RecommendModel(batch_size, max_length, n_hidden_units,n_movies,
+    model_class = RecModel(batch_size, max_length, n_hidden_units,n_movies,
                         n_genres, train_epochs, n_train_user, n_val_user)
 
-    #finalmodel = model_class.build()
+    finalmodel = model_class.build()
 
-    #model_class.modelCompile(finalmodel)
-    
-    finalmodel.build()
-    finalmodel.modelCompile
+    opti = keras.optimizers.Adam(lr=0.01)
+
+    model_class.modelCompile(finalmodel, opti)
 
 
     def scheduler(epoch):
@@ -42,7 +41,7 @@ def main():
         return K.get_value(finalmodel.optimizer.lr)
 
 
-    finalmodel.train(training_set, validation_set, scheduler)
+    model_class.train(finalmodel, training_set, validation_set, scheduler)
 
 
 if __name__ == '__main__':
