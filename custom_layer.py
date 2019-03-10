@@ -244,7 +244,6 @@ class Self_RNN(Layer):
         attention_prob=K.batch_dot(key, query, axes=[1, 2])/np.sqrt(self.units)
         attention_prob = K.softmax(attention_prob)
         print(attention_prob.shape)
-        print(inputs.shape)
         outputs = K.batch_dot(attention_prob, value)
         print(outputs.shape)
         return outputs[:,0], [outputs[:,0], step_in]
