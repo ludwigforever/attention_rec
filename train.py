@@ -21,29 +21,29 @@ def main():
 
     finalmodel = model_class.build()
 
-    opti = keras.optimizers.Adam(lr=0.01)
-
-    model_class.modelCompile(finalmodel, opti)
+    model_class.modelCompile(finalmodel)
 
 
-    def scheduler(epoch):
-        # 每隔5个epoch，学习率减小为原来的1/2
-        if epoch == 1:
-            lr = K.get_value(finalmodel.optimizer.lr)
-            K.set_value(finalmodel.optimizer.lr, lr * 0.5)
-            print("lr changed to {}".format(lr * 0.5))
-        elif epoch == 2:
-            lr = K.get_value(finalmodel.optimizer.lr)
-            K.set_value(finalmodel.optimizer.lr, lr * 0.2)
-            print("lr changed to {}".format(lr * 0.2))
-        elif epoch == 120:
-            lr = K.get_value(finalmodel.optimizer.lr)
-            K.set_value(finalmodel.optimizer.lr, lr * 0.5)
-            print("lr changed to {}".format(lr * 0.5))
-        return K.get_value(finalmodel.optimizer.lr)
+    
 
     model_class.train(finalmodel, training_set, validation_set, scheduler)
 
 
+def scheduler(epoch):
+    # 每隔5个epoch，学习率减小为原来的1/2
+    if epoch == 1:
+        lr = K.get_value(finalmodel.optimizer.lr)
+        K.set_value(finalmodel.optimizer.lr, lr * 0.5)
+        print("lr changed to {}".format(lr * 0.5))
+    elif epoch == 2:
+        lr = K.get_value(finalmodel.optimizer.lr)
+        K.set_value(finalmodel.optimizer.lr, lr * 0.2)
+        print("lr changed to {}".format(lr * 0.2))
+    elif epoch == 120:
+        lr = K.get_value(finalmodel.optimizer.lr)
+        K.set_value(finalmodel.optimizer.lr, lr * 0.5)
+        print("lr changed to {}".format(lr * 0.5))
+    return K.get_value(finalmodel.optimizer.lr)
+    
 if __name__ == '__main__':
     main()
