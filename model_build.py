@@ -57,7 +57,7 @@ class RecModel(object):
     def modelCompile(self, model):
         model.summary()
         opti=keras.optimizers.Adam(lr=0.01)
-        model.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[top_10_CCE])
+        model.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[self.top_10_CCE])
 
     def train(self, model, gen_train, gen_val, scheduler):
         start_time = time.time()
