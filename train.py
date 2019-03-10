@@ -42,18 +42,7 @@ def main():
             print("lr changed to {}".format(lr * 0.5))
         return K.get_value(finalmodel.optimizer.lr)
 
-
-    def quit(signum, frame):
-        print('')
-        print('stop fusion')
-        sys.exit()
-    
-    
-    signal.signal(signal.SIGINT, quit)                                
-    signal.signal(signal.SIGTERM, quit)
-    
-    while True:
-        model_class.train(finalmodel, training_set, validation_set, scheduler)
+    model_class.train(finalmodel, training_set, validation_set, scheduler)
 
 
 if __name__ == '__main__':
