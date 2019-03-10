@@ -186,10 +186,6 @@ class SelfAttention(Layer):
         return (input_shape[0], self.units)
 
 
-def top_10_CCE(y_true, y_pred):
-    return top_k_categorical_accuracy(y_true, y_pred, k=10)
-
-
 class Self_RNN(Layer):
 
     def __init__(self, units, dropout=0., **kwargs):
@@ -213,6 +209,10 @@ class Self_RNN(Layer):
                                       initializer='glorot_normal',
                                       trainable=True)
         
+        self.rec_kernel = self.add_weight(name='rec_kernel',
+                                      shape=(self.units, self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
         print('input_shape',input_shape)
 
     def step_do(self, step_in, states): # 定义每一步的迭代
@@ -223,7 +223,9 @@ class Self_RNN(Layer):
         if 0 < self.dropout < 1.:
             in_value = step_in * self._dropout_mask
         
-        first = K.expand_dims(states[0],axis=-2)
+        hist=K.dot(states[0], self.rec_kernel)
+        
+        first = K.expand_dims(hist,axis=-2)
         second = K.expand_dims(states[1],axis=-2)
         third = K.expand_dims(in_value,axis=-2)
         inp = K.concatenate([first,second,third], axis=-2)
@@ -242,9 +244,10 @@ class Self_RNN(Layer):
         attention_prob=K.batch_dot(key, query, axes=[1, 2])/np.sqrt(self.units)
         attention_prob = K.softmax(attention_prob)
         print(attention_prob.shape)
+        print(inputs.shape)
         outputs = K.batch_dot(attention_prob, value)
         print(outputs.shape)
-        return outputs[:,-1], [outputs[:,-1], step_in]
+        return outputs[:,0], [outputs[:,0], step_in]
     
     def call(self, inputs): # 定义正式执行的函数
         
