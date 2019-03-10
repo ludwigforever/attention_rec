@@ -20,7 +20,7 @@ from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from keras.metrics import top_k_categorical_accuracy
-from custom_layer import AttentionRNN, SelfAttention, Self_RNN\
+from custom_layer import AttentionRNN, SelfAttention, Self_RNN
 
 class RecModel(object):
     def __init__(self, batch_size, max_length, n_hidden_units,
@@ -57,7 +57,7 @@ class RecModel(object):
     def modelCompile(self, model):
         model.summary()
         opti=keras.optimizers.Adam(lr=0.01)
-        model.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[self.top_10_CCE])
+        model.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[top_k_categorical_accuracy(k=10)])
 
     def train(self, model, gen_train, gen_val, scheduler):
         start_time = time.time()
@@ -78,5 +78,4 @@ class RecModel(object):
         print('total time:%f' % (end_time - start_time))
         
         
-    def top_10_CCE(y_true,y_pred):
-        return top_k_categorical_accuracy(y_true,y_pred,k=10)
+
