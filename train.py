@@ -32,8 +32,8 @@ def main():
     train_epochs = 40
 
     dataset = DataHandler(batch_size, max_length, n_movies, n_genres, n_usercode)
-    #training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data()
-    training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data_lstm()
+    training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data()
+    #training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data_lstm()
 
     def top_10_CCE(y_true, y_pred):
         return top_k_categorical_accuracy(y_true, y_pred, k=10)
@@ -41,11 +41,11 @@ def main():
     inputs = Input(shape=(max_length, n_movies + n_genres + n_usercode))
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(inputs)
 
-    lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
+    #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
-    #bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
+    bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
 
-    out = Dense(n_movies, activation='softmax', name='out')(lstm)
+    out = Dense(n_movies, activation='softmax', name='out')(bi_self_rnn_out)
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
