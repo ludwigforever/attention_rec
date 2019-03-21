@@ -372,3 +372,81 @@ class Bi_Self_RNN(Layer):
 
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.units)
+
+class similar_RNN(Layer):
+
+    def __init__(self, units, dropout=0., **kwargs):
+        self.units = units # 输出维度
+        self.dropout = min(1., max(0., dropout))
+        self.supports_masking = True
+        super(similar_RNN, self).__init__(**kwargs)
+    
+    def compute_mask(self, inputs, mask):
+        if isinstance(mask, list):
+            mask = mask[0]
+        output_mask =  None
+        return output_mask
+    
+    def build(self, input_shape): # 定义可训练参数
+        
+        self.query_kernel = self.add_weight(name='query_kernel',
+                                      shape=(self.units, self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        self.key_kernel = self.add_weight(name='key_kernel',
+                                      shape=(self.units, self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        self.value_kernel = self.add_weight(name='value_kernel',
+                                      shape=(self.units, self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        #print('input_shape',input_shape)
+
+    def step_do(self, step_in, states): # 定义每一步的迭代
+        
+        in_value = step_in
+        if 0 < self.dropout < 1.:
+            self._dropout_mask = K.in_train_phase(K.dropout(K.ones_like(step_in), self.dropout), K.ones_like(step_in))
+        if 0 < self.dropout < 1.:
+            in_value = step_in * self._dropout_mask
+        
+        d1 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[0])/self.units),axis=-1,keepdims=True)))
+        d2 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[1])/self.units),axis=-1,keepdims=True)))
+        print('d1.shape',d1.shape)
+        state1 = d1*states[0] + (1-d1)*in_value
+        print('state1.shape',state1.shape)
+        state2 = (1-d2)*states[0] + d2*in_value
+        
+        lt = K.expand_dims(state1,axis=-2)
+        st = K.expand_dims(state2,axis=-2)
+        outputs = K.concatenate([lt, st], axis=-2)
+        
+        return outputs, [state1, state2]
+    
+    def call(self, inputs): # 定义正式执行的函数
+        
+        init_states = [K.zeros((K.shape(inputs)[0],self.units)), K.zeros((K.shape(inputs)[0],self.units))] # 定义初始态(全零)
+        #init_states = [inputs[0]]
+        #print('inputs',K.shape(inputs)[0])
+        outputs = K.rnn(self.step_do, inputs, init_states, unroll=False) # 循环执行step_do函数
+        #print('outputs',outputs[0].shape)
+        
+        print('outputs[0].shape',outputs[0].shape)
+        query=K.dot(outputs[0], self.query_kernel)
+        
+        key=K.dot(outputs[0], self.key_kernel)
+        
+        value=K.dot(outputs[0], self.value_kernel)
+        
+        attention_prob = K.batch_dot(query, key, axes=[2, 2])/np.sqrt(self.units)
+        attention_prob = K.softmax(attention_prob)
+        print(attention_prob.shape)
+        att_out = K.batch_dot(attention_prob, value, axes=[2, 1])
+        
+        return att_out[:,0]
+    
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], self.units)
