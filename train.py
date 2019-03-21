@@ -38,7 +38,7 @@ def main():
     def top_10_CCE(y_true, y_pred):
         return top_k_categorical_accuracy(y_true, y_pred, k=10)
 
-    inputs = Input(shape=(max_length+1, n_movies + n_genres + n_usercode))
+    inputs = Input(shape=(max_length, n_movies + n_genres + n_usercode))
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(inputs)
 
     lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
