@@ -52,7 +52,7 @@ def main():
 
     start_time = time.time()
 
-    filepath = "model(attention)/model_{epoch:02d}-{val_top_10_CCE:.7f}.h5"
+    filepath = "model_extend/model_{epoch:02d}-{val_top_10_CCE:.7f}.h5"
     checkpoint = ModelCheckpoint(filepath, monitor='val_top_10_CCE', verbose=1, save_best_only=True, mode='max')
     reduce_lr_on_pl = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=2, verbose=1,
                                                         mode='auto', epsilon=0.0001, cooldown=0, min_lr=0)
