@@ -19,7 +19,7 @@ from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from keras.metrics import top_k_categorical_accuracy
-from custom_layer import AttentionRNN, SelfAttention, Bi_Self_RNN
+from custom_layer import AttentionRNN, SelfAttention, Bi_Self_RNN, similar_RNN
 
 def main():
     batch_size = 15
@@ -28,7 +28,7 @@ def main():
     n_genres = 18
     n_usercode = 29
     max_length = 20
-    n_hidden_units = 64
+    n_hidden_units = 80
     train_epochs = 40
 
     dataset = DataHandler(batch_size, max_length, n_movies, n_genres, n_usercode)
@@ -43,9 +43,10 @@ def main():
 
     #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
-    bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Bi_Self_RNN')(embedding)
+    #bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Bi_Self_RNN')(embedding)
+    similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
 
-    out = Dense(n_movies, activation='softmax', name='out')(bi_self_rnn_out)
+    out = Dense(n_movies, activation='softmax', name='out')(similar)
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
