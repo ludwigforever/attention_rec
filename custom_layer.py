@@ -413,8 +413,8 @@ class similar_RNN(Layer):
         if 0 < self.dropout < 1.:
             in_value = step_in * self._dropout_mask
         
-        d1 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[0])/self.units),axis=-1,keepdims=True)))
-        d2 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[1])/self.units),axis=-1,keepdims=True)))
+        d1 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[0])/self.units),axis=-1,keepdims=True)/2))
+        d2 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[1])/self.units),axis=-1,keepdims=True)/2))
         print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
         print('state1.shape',state1.shape)
