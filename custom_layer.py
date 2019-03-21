@@ -428,10 +428,10 @@ class similar_RNN(Layer):
     
     def call(self, inputs): # 定义正式执行的函数
         
-        #init_states = [K.zeros((K.shape(inputs)[0],self.units)), K.zeros((K.shape(inputs)[0],self.units))] # 定义初始态(全零)
-        init_states = [inputs[:,0], inputs[:,0]]
+        init_states = [K.zeros((K.shape(inputs)[0],self.units)), K.zeros((K.shape(inputs)[0],self.units))] # 定义初始态(全零)
+        #init_states = [inputs[:,0], inputs[:,0]]
         #print('inputs',K.shape(inputs)[0])
-        outputs = K.rnn(self.step_do, inputs[:, 1:], init_states, unroll=False) # 循环执行step_do函数
+        outputs = K.rnn(self.step_do, inputs, init_states, unroll=False) # 循环执行step_do函数
         #print('outputs',outputs[0].shape)
         
         print('outputs[0].shape',outputs[0].shape)
