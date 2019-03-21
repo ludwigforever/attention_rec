@@ -388,7 +388,7 @@ class similar_RNN(Layer):
         return output_mask
     
     def build(self, input_shape): # 定义可训练参数
-        
+        '''
         self.query_kernel = self.add_weight(name='query_kernel',
                                       shape=(self.units, self.units),
                                       initializer='glorot_normal',
@@ -404,7 +404,7 @@ class similar_RNN(Layer):
                                       initializer='glorot_normal',
                                       trainable=True)
         #print('input_shape',input_shape)
-
+'''
     def step_do(self, step_in, states): # 定义每一步的迭代
         
         in_value = step_in
@@ -413,16 +413,18 @@ class similar_RNN(Layer):
         if 0 < self.dropout < 1.:
             in_value = step_in * self._dropout_mask
         
-        d1 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[0])/self.units),axis=-1,keepdims=True)/2))
-        d2 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[1])/self.units),axis=-1,keepdims=True)/2))
+        d1 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[0])/self.units),axis=-1,keepdims=True)))
+        d2 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[1])/self.units),axis=-1,keepdims=True)))
         print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
         print('state1.shape',state1.shape)
         state2 = (1-d2)*states[0] + d2*in_value
-        
+        '''
         lt = K.expand_dims(state1,axis=-2)
         st = K.expand_dims(state2,axis=-2)
         outputs = K.concatenate([lt, st], axis=-2)
+        '''
+        outputs = K.concatenate([state1, state2], axis=-1)
         
         return outputs, [state1, state2]
     
@@ -433,7 +435,7 @@ class similar_RNN(Layer):
         #print('inputs',K.shape(inputs)[0])
         outputs = K.rnn(self.step_do, inputs, init_states, unroll=False) # 循环执行step_do函数
         #print('outputs',outputs[0].shape)
-        
+        '''
         print('outputs[0].shape',outputs[0].shape)
         query=K.dot(outputs[0], self.query_kernel)
         
@@ -447,6 +449,7 @@ class similar_RNN(Layer):
         att_out = K.batch_dot(attention_prob, value, axes=[2, 1])
         
         return att_out[:,0]
-    
+    '''
+        return outputs[0]
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.units)
