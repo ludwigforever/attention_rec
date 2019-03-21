@@ -40,10 +40,11 @@ def main():
     inputs = Input(shape=(max_length+1, n_movies + n_genres + n_usercode))
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(inputs)
 
+    lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
-    bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
+    #bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
 
-    out = Dense(n_movies, activation='softmax', name='out')(bi_self_rnn_out)
+    out = Dense(n_movies, activation='softmax', name='out')(lstm)
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
