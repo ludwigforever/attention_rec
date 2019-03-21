@@ -452,4 +452,4 @@ class similar_RNN(Layer):
     '''
         return outputs[0]
     def compute_output_shape(self, input_shape):
-        return (input_shape[0], self.units)
+        return (input_shape[0], self.units*2)
