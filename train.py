@@ -1,4 +1,4 @@
-from clone.prepare_data import DataHandler
+from prepare_data import DataHandler
 import keras
 from keras import backend as K
 import time
@@ -19,7 +19,7 @@ from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from keras.metrics import top_k_categorical_accuracy
-from clone.custom_layer import AttentionRNN, SelfAttention, Bi_Self_RNN
+from custom_layer import AttentionRNN, SelfAttention, Bi_Self_RNN
 
 def main():
     batch_size = 15
