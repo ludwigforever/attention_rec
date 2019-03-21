@@ -28,7 +28,7 @@ def main():
     n_genres = 18
     n_usercode = 29
     max_length = 20
-    n_hidden_units = 80
+    n_hidden_units = 64
     train_epochs = 40
 
     dataset = DataHandler(batch_size, max_length, n_movies, n_genres, n_usercode)
