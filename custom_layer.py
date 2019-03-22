@@ -388,23 +388,23 @@ class similar_RNN(Layer):
         return output_mask
     
     def build(self, input_shape): # 定义可训练参数
-        '''
+        
         self.query_kernel = self.add_weight(name='query_kernel',
-                                      shape=(self.units, self.units),
+                                      shape=(input_shape[-1]*2, self.units),
                                       initializer='glorot_normal',
                                       trainable=True)
         
         self.key_kernel = self.add_weight(name='key_kernel',
-                                      shape=(self.units, self.units),
+                                      shape=(input_shape[-1]*2, self.units),
                                       initializer='glorot_normal',
                                       trainable=True)
         
         self.value_kernel = self.add_weight(name='value_kernel',
-                                      shape=(self.units, self.units),
+                                      shape=(input_shape[-1]*2, self.units),
                                       initializer='glorot_normal',
                                       trainable=True)
         #print('input_shape',input_shape)
-'''
+
     def step_do(self, step_in, states): # 定义每一步的迭代
         
         in_value = step_in
@@ -415,6 +415,10 @@ class similar_RNN(Layer):
         
         d1 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[0])/self.units),axis=-1,keepdims=True)))
         d2 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[1])/self.units),axis=-1,keepdims=True)))
+        '''
+        d1 = K.sigmoid(K.sum((K.abs(in_value-states[0])/self.units),axis=-1,keepdims=True))
+        d2 = K.sigmoid(K.sum((K.abs(in_value-states[1])/self.units),axis=-1,keepdims=True))
+        '''
         print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
         print('state1.shape',state1.shape)
@@ -430,26 +434,25 @@ class similar_RNN(Layer):
     
     def call(self, inputs): # 定义正式执行的函数
         
-        init_states = [K.zeros((K.shape(inputs)[0],self.units)), K.zeros((K.shape(inputs)[0],self.units))] # 定义初始态(全零)
+        init_states = [K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1])), K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1]))] # 定义初始态(全零)
         #init_states = [inputs[:,0], inputs[:,0]]
         #print('inputs',K.shape(inputs)[0])
         outputs = K.rnn(self.step_do, inputs, init_states, unroll=False) # 循环执行step_do函数
-        #print('outputs',outputs[0].shape)
-        '''
+        #print('outputs[1]',outputs.shape)
+        
         print('outputs[0].shape',outputs[0].shape)
-        query=K.dot(outputs[0], self.query_kernel)
         
-        key=K.dot(outputs[0], self.key_kernel)
+        query=K.dot(outputs[1], self.query_kernel)
+        print('query.shape',query.shape)
+        key=K.dot(outputs[1], self.key_kernel)
         
-        value=K.dot(outputs[0], self.value_kernel)
+        value=K.dot(outputs[1], self.value_kernel)
         
         attention_prob = K.batch_dot(query, key, axes=[2, 2])/np.sqrt(self.units)
         attention_prob = K.softmax(attention_prob)
         print(attention_prob.shape)
         att_out = K.batch_dot(attention_prob, value, axes=[2, 1])
         
-        return att_out[:,0]
-    '''
-        return outputs[0]
+        return att_out[:,-1]
     def compute_output_shape(self, input_shape):
-        return (input_shape[0], self.units*2)
+        return (input_shape[0], self.units)
