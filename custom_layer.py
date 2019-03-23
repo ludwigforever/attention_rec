@@ -496,12 +496,12 @@ class similar_RNN_multi(Layer):
         self.query_kernel1 = self.query_kernel[:, :self.units]
         self.query_kernel2 = self.query_kernel[:, self.units:self.units*2]
         self.query_kernel3 = self.query_kernel[:, self.units*2:self.units*3]
-        self.query_kernel4 = self.query_kernel[:, self.units3:]
+        self.query_kernel4 = self.query_kernel[:, self.units*3:]
         
         self.key_kernel1 = self.key_kernel[:, :self.units]
         self.key_kernel2 = self.key_kernel[:, self.units:self.units*2]
         self.key_kernel3 = self.key_kernel[:, self.units*2:self.units*3]
-        self.key_kernel4 = self.key_kernel[:, self.units3:]
+        self.key_kernel4 = self.key_kernel[:, self.units*3:]
         
         self.value_kernel1 = self.value_kernel[:, :self.units]
         self.value_kernel2 = self.value_kernel[:, self.units:self.units*2]
