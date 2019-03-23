@@ -463,7 +463,7 @@ class similar_RNN_multi(Layer):
         self.units = units # 输出维度
         self.dropout = min(1., max(0., dropout))
         self.supports_masking = True
-        super(similar_RNN, self).__init__(**kwargs)
+        super(similar_RNN_multi, self).__init__(**kwargs)
     
     def compute_mask(self, inputs, mask):
         if isinstance(mask, list):
