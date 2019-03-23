@@ -506,7 +506,7 @@ class similar_RNN_multi(Layer):
         self.value_kernel1 = self.value_kernel[:, :self.units]
         self.value_kernel2 = self.value_kernel[:, self.units:self.units*2]
         self.value_kernel3 = self.value_kernel[:, self.units*2:self.units*3]
-        self.value_kernel4 = self.value_kernel[:, self.units3:]
+        self.value_kernel4 = self.value_kernel[:, self.units*3:]
         
         
 
