@@ -32,8 +32,8 @@ def main():
     train_epochs = 40
 
     dataset = DataHandler(batch_size, max_length, n_movies, n_genres, n_usercode)
-    #training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data()
-    training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data_lstm()
+    training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data()
+    #training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data_lstm()
 
     def top_10_CCE(y_true, y_pred):
         return top_k_categorical_accuracy(y_true, y_pred, k=10)
