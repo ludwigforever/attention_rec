@@ -51,7 +51,9 @@ def main():
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
-    finalmodel.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[top_10_CCE])
+    opti=keras.optimizers.Adam(lr=0.01)
+    finalmodel.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[top_10_CCE])
+    #finalmodel.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[top_10_CCE])
 
     start_time = time.time()
 
