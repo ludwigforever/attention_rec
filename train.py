@@ -51,7 +51,7 @@ def main():
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
-    opti=keras.optimizers.Adam(lr=0.01)
+    opti=keras.optimizers.Adam(lr=0.005)
     finalmodel.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[top_10_CCE])
     #finalmodel.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[top_10_CCE])
 
