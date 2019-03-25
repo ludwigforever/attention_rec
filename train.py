@@ -29,7 +29,7 @@ def main():
     n_usercode = 29
     max_length = 20
     n_hidden_units = 100
-    train_epochs = 40
+    train_epochs = 30
 
     dataset = DataHandler(batch_size, max_length, n_movies, n_genres, n_usercode)
     training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data()
@@ -60,7 +60,7 @@ def main():
 
     start_time = time.time()
 
-    filepath = "model_extend/model_{epoch:02d}-{val_top_10_CCE:.7f}.h5"
+    filepath = "model/model_{epoch:02d}-{val_top_10_CCE:.7f}.h5"
     checkpoint = ModelCheckpoint(filepath, monitor='val_top_10_CCE', verbose=1, mode='max')
     reduce_lr_on_pl = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=2, verbose=1,
                                                         mode='auto', epsilon=0.0001, cooldown=0, min_lr=0)
