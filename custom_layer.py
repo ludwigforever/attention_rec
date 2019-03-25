@@ -529,7 +529,7 @@ class similar_RNN_multi(Layer):
         d1 = 0.85
         d2 = 0.85
         
-        print('d1.shape',d1.shape)
+        #print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
         print('state1.shape',state1.shape)
         state2 = (1-d2)*states[0] + d2*in_value
