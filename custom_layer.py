@@ -518,13 +518,17 @@ class similar_RNN_multi(Layer):
             self._dropout_mask = K.in_train_phase(K.dropout(K.ones_like(step_in), self.dropout), K.ones_like(step_in))
         if 0 < self.dropout < 1.:
             in_value = step_in * self._dropout_mask
-        
+        '''
         d1 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[0])/self.units),axis=-1,keepdims=True)))
         d2 = K.sigmoid(K.sqrt(K.sum((K.square(in_value-states[1])/self.units),axis=-1,keepdims=True)))
-        '''
+        
+        
         d1 = K.sigmoid(K.sum((K.abs(in_value-states[0])/self.units),axis=-1,keepdims=True))
         d2 = K.sigmoid(K.sum((K.abs(in_value-states[1])/self.units),axis=-1,keepdims=True))
         '''
+        d1 = 0.85
+        d2 = 0.85
+        
         print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
         print('state1.shape',state1.shape)
