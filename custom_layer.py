@@ -614,12 +614,17 @@ class genres_similar(Layer):
         return output_mask
     
     def build(self, input_shape): # 定义可训练参数
-        '''
-        self.encode_kernel = self.add_weight(name='encode_kernel',
+        ''''''
+        self.state_kernel = self.add_weight(name='state_kernel',
                                       shape=(input_shape[-1], self.units),
                                       initializer='glorot_normal',
                                       trainable=True)
-        '''
+        
+        self.input_kernel = self.add_weight(name='input_kernel',
+                                      shape=(input_shape[-1], self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
         self.query_kernel = self.add_weight(name='query_kernel',
                                       shape=(self.units*2, self.units*4),
                                       initializer='glorot_normal',
@@ -676,13 +681,18 @@ class genres_similar(Layer):
         d2 = K.sigmoid(K.sum((K.abs(in_value-states[1])/self.units),axis=-1,keepdims=True))
         '''
         
-        d1 = K.sigmoid(states[0]*in_value)/2
-        d2 = K.sigmoid(states[1]*in_value)/2
-        
+        #d1 = K.sigmoid(states[0]*in_value)/2
+        #d2 = K.sigmoid(states[1]*in_value)/2
+        update=K.sigmoid(K.dot(states[0], self.state_kernel)+ K.dot(step_in, self.input_kernel))
+        '''
         #print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
         print('state1.shape',state1.shape)
         state2 = (1-d2)*states[1] + d2*in_value
+        '''
+        outputs = (1-update)*states[0]+update*step_in
+        
+        
         '''
         lt = K.expand_dims(state1,axis=-2)
         st = K.expand_dims(state2,axis=-2)
@@ -691,10 +701,10 @@ class genres_similar(Layer):
         out1 = K.dot(state1, self.encode_kernel)
         out2 = K.dot(state2, self.encode_kernel)
         '''
-        outputs = K.concatenate([state1, state2], axis=-1)
+        #outputs = K.concatenate([state1, state2], axis=-1)
         #outputs = K.relu(outputs)
         
-        return outputs, [state1, state2]
+        return outputs, [outputs]#[state1, state2]
     
     def call(self, inputs): # 定义正式执行的函数
         
