@@ -677,7 +677,7 @@ class genres_similar(Layer):
         #print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
         print('state1.shape',state1.shape)
-        state2 = (1-d2)*states[0] + d2*in_value
+        state2 = (1-d2)*states[1] + d2*in_value
         '''
         lt = K.expand_dims(state1,axis=-2)
         st = K.expand_dims(state2,axis=-2)
