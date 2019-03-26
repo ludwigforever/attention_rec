@@ -27,7 +27,7 @@ def main():
     n_users = 6040
     n_genres = 18
     n_usercode = 29
-    max_length = 20
+    max_length = 30
     n_hidden_units = 100
     train_epochs = 30
 
