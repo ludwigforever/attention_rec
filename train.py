@@ -39,14 +39,14 @@ def main():
         return top_k_categorical_accuracy(y_true, y_pred, k=10)
 
     inputs = Input(shape=(max_length, n_movies + n_genres + n_usercode))
-    #embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(inputs)
+    embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(inputs)
 
     #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
     #multi = similar_RNN_multi(n_hidden_units, name='similar_RNN_multi')(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
     #bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Bi_Self_RNN')(embedding)
-    #similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
-    similar=genres_similar(n_hidden_units, name='genres_similar')(inputs)
+    similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
+    #similar=genres_similar(n_hidden_units, name='genres_similar')(inputs)
 
     out = Dense(n_movies, activation='softmax', name='out')(similar)
 
