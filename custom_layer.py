@@ -676,8 +676,8 @@ class genres_similar(Layer):
         d2 = K.sigmoid(K.sum((K.abs(in_value-states[1])/self.units),axis=-1,keepdims=True))
         '''
         
-        d1 = K.sigmoid(states[0]*in_value)
-        d2 = K.sigmoid(states[1]*in_value)
+        d1 = K.sigmoid(states[0]*in_value)/2
+        d2 = K.sigmoid(states[1]*in_value)/2
         
         #print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
