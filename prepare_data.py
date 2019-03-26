@@ -147,9 +147,9 @@ class DataHandler(object):
                 j += len(seq_lengths)
 
             if test:
-                yield self.prepare_input_with_user(sequences), [i[0] for i in sequence[seq_lengths[0]:]]
+                yield self.prepare_input(sequences), [i[0] for i in sequence[seq_lengths[0]:]]
             else:
-                yield self.prepare_input_with_user(sequences)
+                yield self.prepare_input(sequences)
 
     def gen_mini_batch_lstm(self, sequence_generator, test=False, max_reuse_sequence=np.inf):
         batch_size = self.batch_size
