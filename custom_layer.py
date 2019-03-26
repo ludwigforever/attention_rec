@@ -908,3 +908,104 @@ class weight_RNN_multi(Layer):
       
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.units)
+
+class multi_head(Layer):
+
+    def __init__(self, units, dropout=0., **kwargs):
+        self.units = units # 输出维度
+        self.dropout = min(1., max(0., dropout))
+        self.supports_masking = True
+        super(multi_head, self).__init__(**kwargs)
+    
+    def compute_mask(self, inputs, mask):
+        if isinstance(mask, list):
+            mask = mask[0]
+        output_mask =  None
+        return output_mask
+    
+    def build(self, input_shape): # 定义可训练参数
+        
+        self.query_kernel = self.add_weight(name='query_kernel',
+                                      shape=(input_shape[-1], self.units*4),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        self.key_kernel = self.add_weight(name='key_kernel',
+                                      shape=(input_shape[-1], self.units*4),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        self.value_kernel = self.add_weight(name='value_kernel',
+                                      shape=(input_shape[-1], self.units*4),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        self.switch_kernel = self.add_weight(name='switch_kernel',
+                                      shape=(self.units*4, self.units),
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        #print('input_shape',input_shape)
+        
+        self.query_kernel1 = self.query_kernel[:, :self.units]
+        self.query_kernel2 = self.query_kernel[:, self.units:self.units*2]
+        self.query_kernel3 = self.query_kernel[:, self.units*2:self.units*3]
+        self.query_kernel4 = self.query_kernel[:, self.units*3:]
+        
+        self.key_kernel1 = self.key_kernel[:, :self.units]
+        self.key_kernel2 = self.key_kernel[:, self.units:self.units*2]
+        self.key_kernel3 = self.key_kernel[:, self.units*2:self.units*3]
+        self.key_kernel4 = self.key_kernel[:, self.units*3:]
+        
+        self.value_kernel1 = self.value_kernel[:, :self.units]
+        self.value_kernel2 = self.value_kernel[:, self.units:self.units*2]
+        self.value_kernel3 = self.value_kernel[:, self.units*2:self.units*3]
+        self.value_kernel4 = self.value_kernel[:, self.units*3:]
+        
+    def call(self, inputs): # 定义正式执行的函数
+        
+        query1=K.dot(inputs, self.query_kernel1)
+        
+        key1=K.dot(inputs, self.key_kernel1)
+        
+        value1=K.dot(inputs, self.value_kernel1)
+        
+        attention_prob1 = K.batch_dot(query1, key1, axes=[2, 2])/np.sqrt(self.units)
+        attention_prob1 = K.softmax(attention_prob1)
+        att_out1 = K.batch_dot(attention_prob1, value1, axes=[2, 1])
+        
+        query2=K.dot(inputs, self.query_kernel2)
+        
+        key2=K.dot(inputs, self.key_kernel2)
+        
+        value2=K.dot(inputs, self.value_kernel2)
+        
+        attention_prob2 = K.batch_dot(query2, key2, axes=[2, 2])/np.sqrt(self.units)
+        attention_prob2 = K.softmax(attention_prob2)
+        att_out2 = K.batch_dot(attention_prob2, value2, axes=[2, 1])
+        
+        query3=K.dot(inputs, self.query_kernel3)
+        
+        key3=K.dot(inputs, self.key_kernel3)
+        
+        value3=K.dot(inputs, self.value_kernel3)
+        
+        attention_prob3 = K.batch_dot(query3, key3, axes=[2, 2])/np.sqrt(self.units)
+        attention_prob3 = K.softmax(attention_prob3)
+        att_out3 = K.batch_dot(attention_prob3, value3, axes=[2, 1])
+        
+        query4=K.dot(inputs, self.query_kernel4)
+        
+        key4=K.dot(inputs, self.key_kernel4)
+        
+        value4=K.dot(inputs, self.value_kernel4)
+        
+        attention_prob4 = K.batch_dot(query4, key4, axes=[2, 2])/np.sqrt(self.units)
+        attention_prob4 = K.softmax(attention_prob4)
+        att_out4 = K.batch_dot(attention_prob4, value4, axes=[2, 1])
+        
+        att_out = K.concatenate([att_out1, att_out2, att_out3, att_out4], axis=-1)
+        out = K.dot(att_out, self.switch_kernel)
+        return out[:, -1]
+      
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], self.units)
