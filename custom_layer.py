@@ -681,16 +681,16 @@ class genres_similar(Layer):
         d2 = K.sigmoid(K.sum((K.abs(in_value-states[1])/self.units),axis=-1,keepdims=True))
         '''
         
-        #d1 = K.sigmoid(states[0]*in_value)/2
-        #d2 = K.sigmoid(states[1]*in_value)/2
-        update=1#K.sigmoid(K.dot(states[0], self.state_kernel)+ K.dot(step_in, self.input_kernel))
-        '''
+        d1 = K.sigmoid(states[0]*in_value)/2
+        d2 = K.sigmoid(states[1]*in_value)/2
+        #update=1#K.sigmoid(K.dot(states[0], self.state_kernel)+ K.dot(step_in, self.input_kernel))
+        ''''''
         #print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
         print('state1.shape',state1.shape)
         state2 = (1-d2)*states[1] + d2*in_value
-        '''
-        outputs = (1-update)*states[0]+update*step_in
+        
+        #outputs = (1-update)*states[0]+update*step_in
         
         
         '''
@@ -701,17 +701,17 @@ class genres_similar(Layer):
         out1 = K.dot(state1, self.encode_kernel)
         out2 = K.dot(state2, self.encode_kernel)
         '''
-        #outputs = K.concatenate([state1, state2], axis=-1)
+        outputs = K.concatenate([state1, state2], axis=-1)
         #outputs = K.relu(outputs)
         
-        return outputs, [outputs]#[state1, state2]
+        return outputs, [state1, state2]
     
     def call(self, inputs): # 定义正式执行的函数
         
-        #init_states = [K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1])), K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1]))] # 定义初始态(全零)
-        init_states = [inputs[:,0], inputs[:,0]]
+        init_states = [K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1])), K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1]))] # 定义初始态(全零)
+        #init_states = [inputs[:,0], inputs[:,0]]
         #print('inputs',K.shape(inputs)[0])
-        outputs = K.rnn(self.step_do, inputs[:,1:], init_states, unroll=False) # 循环执行step_do函数
+        outputs = K.rnn(self.step_do, inputs, init_states, unroll=False) # 循环执行step_do函数
         #print('outputs[1]',outputs.shape)
         
         print('outputs[0].shape',outputs[0].shape)
