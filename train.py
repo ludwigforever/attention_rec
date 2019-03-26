@@ -19,7 +19,7 @@ from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from keras.metrics import top_k_categorical_accuracy
-from custom_layer import AttentionRNN, SelfAttention, Bi_Self_RNN, similar_RNN, similar_RNN_multi, genres_similar, weight_RNN_multi
+from custom_layer import multi_head, SelfAttention, Bi_Self_RNN, similar_RNN, similar_RNN_multi, genres_similar, weight_RNN_multi
 
 def main():
     batch_size = 15
@@ -41,15 +41,18 @@ def main():
     inputs = Input(shape=(max_length, n_movies + n_genres))# + n_usercode))
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(inputs)
 
-    #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
+    lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
+    cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=False)(embedding)
     #multi = similar_RNN_multi(n_hidden_units, name='similar_RNN_multi')(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
     #bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Bi_Self_RNN')(embedding)
     #similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
     #similar=genres_similar(n_hidden_units, name='genres_similar')(embedding)
-    weight=weight_RNN_multi(n_hidden_units, name='weight_RNN_multi')(embedding)
+    #weight=weight_RNN_multi(n_hidden_units, name='weight_RNN_multi')(embedding)
+    lstm_cov=Concatenate(axis=-1, name='lstm_cov')([lstm,cov])
+    multi=multi_head(n_hidden_units, name='multi_head')(lstm_cov)
 
-    out = Dense(n_movies, activation='softmax', name='out')(weight)
+    out = Dense(n_movies, activation='softmax', name='out')(multi)
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
