@@ -42,7 +42,7 @@ def main():
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(inputs)
 
     lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
-    cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=False)(embedding)
+    cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=True)(embedding)
     #multi = similar_RNN_multi(n_hidden_units, name='similar_RNN_multi')(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
     #bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Bi_Self_RNN')(embedding)
