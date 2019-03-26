@@ -45,8 +45,8 @@ def main():
     #multi = similar_RNN_multi(n_hidden_units, name='similar_RNN_multi')(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
     #bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Bi_Self_RNN')(embedding)
-    similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
-    #similar=genres_similar(n_hidden_units, name='genres_similar')(inputs)
+    #similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
+    similar=genres_similar(n_hidden_units, name='genres_similar')(embedding)
 
     out = Dense(n_movies, activation='softmax', name='out')(similar)
 
