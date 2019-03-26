@@ -614,7 +614,7 @@ class genres_similar(Layer):
         return output_mask
     
     def build(self, input_shape): # 定义可训练参数
-        ''''''
+        '''
         self.state_kernel = self.add_weight(name='state_kernel',
                                       shape=(input_shape[-1], self.units),
                                       initializer='glorot_normal',
@@ -624,7 +624,7 @@ class genres_similar(Layer):
                                       shape=(input_shape[-1], self.units),
                                       initializer='glorot_normal',
                                       trainable=True)
-        
+        '''
         self.query_kernel = self.add_weight(name='query_kernel',
                                       shape=(self.units*2, self.units*4),
                                       initializer='glorot_normal',
@@ -683,7 +683,7 @@ class genres_similar(Layer):
         
         #d1 = K.sigmoid(states[0]*in_value)/2
         #d2 = K.sigmoid(states[1]*in_value)/2
-        update=K.sigmoid(K.dot(states[0], self.state_kernel)+ K.dot(step_in, self.input_kernel))
+        update=1#K.sigmoid(K.dot(states[0], self.state_kernel)+ K.dot(step_in, self.input_kernel))
         '''
         #print('d1.shape',d1.shape)
         state1 = d1*states[0] + (1-d1)*in_value
