@@ -51,7 +51,7 @@ def main():
     #weight=weight_RNN_multi(n_hidden_units, name='weight_RNN_multi')(embedding)
     lstm_cov=Concatenate(axis=-1, name='lstm_cov')([lstm,cov])
     multi=multi_head(n_hidden_units, name='multi_head')(lstm_cov)
-    out = Activation('relu')(multi)
+    #out = Activation('relu')(multi)
 
     out = Dense(n_movies, activation='softmax', name='out')(out)
 
