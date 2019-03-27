@@ -22,7 +22,7 @@ from keras.metrics import top_k_categorical_accuracy
 from custom_layer import multi_head, SelfAttention, Bi_Self_RNN, similar_RNN, similar_RNN_multi, genres_similar, weight_RNN_multi
 
 def main():
-    batch_size = 15
+    batch_size = 10
     n_movies = 3706
     n_users = 6040
     n_genres = 18
