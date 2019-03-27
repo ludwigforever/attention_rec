@@ -53,7 +53,7 @@ def main():
     multi=multi_head(n_hidden_units, name='multi_head')(lstm_cov)
     #out = Activation('relu')(multi)
 
-    out = Dense(n_movies, activation='softmax', name='out')(out)
+    out = Dense(n_movies, activation='softmax', name='out')(multi)
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
