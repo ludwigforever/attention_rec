@@ -14,7 +14,7 @@ from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Activation, Dropout, Flatten,Average, Multiply, Dot, Input, Activation, Lambda, Flatten, Embedding,Concatenate, Layer,Reshape
 
 
-from keras.layers import LSTM, recurrent, Conv1D
+from keras.layers import LSTM, recurrent, Conv1D， GaussianNoise
 from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
@@ -39,7 +39,8 @@ def main():
         return top_k_categorical_accuracy(y_true, y_pred, k=10)
 
     inputs = Input(shape=(max_length, n_movies + n_genres))# + n_usercode))
-    embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(inputs)
+    noise = GaussianNoise(0.01)(inputs)
+    embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
 
     lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
     cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=True)(embedding)
