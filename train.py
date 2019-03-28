@@ -38,8 +38,9 @@ def main():
     def top_10_CCE(y_true, y_pred):
         return top_k_categorical_accuracy(y_true, y_pred, k=10)
 
+    #inputs1 = Input(shape=(max_length, n_usercode))
     inputs = Input(shape=(max_length, n_movies + n_genres))# + n_usercode))
-    noise = GaussianNoise(0.01)(inputs)
+    noise = GaussianNoise(0.02)(inputs)
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
 
     lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
