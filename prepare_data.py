@@ -98,6 +98,23 @@ class DataHandler(object):
         U = np.tile(U, [1, self.max_length + 1, 1])
         new = np.concatenate((U, X), axis=2)
         return (new, Y)
+    
+    def prepare_input_and_user(self, sequences):
+
+        U = np.zeros((self.batch_size, self.n_usercode), dtype='float')
+        X = np.zeros((self.batch_size, self.max_length, self.n_movies + self.n_genres), dtype='float')
+        Y = np.zeros((self.batch_size, self.n_movies), dtype='float')
+        uid=-1
+        for i, sequence in enumerate(sequences):
+            user_id, in_seq, target = sequence
+            uid = user_id
+            seq_features = np.array(list(map(lambda x: self.get_features(x), in_seq)))
+            X[i, self.max_length - len(in_seq):, :] = seq_features
+            one_hot_encoding = np.zeros(self.n_movies)
+            one_hot_encoding[target[0]] = 1
+            Y[i] = one_hot_encoding
+        U = self.users_code[int(uid)]
+        return ([U,X], Y)
 
     def prepare_input_with_user_lstm(self, sequences):
         X = np.zeros((self.batch_size, self.max_length, self.n_movies + self.n_genres + self.n_usercode), dtype='float')
@@ -181,9 +198,9 @@ class DataHandler(object):
                 j += len(seq_lengths)
 
             if test:
-                yield self.prepare_input_with_user_lstm(sequences), [i[0] for i in sequence[seq_lengths[0]:]]
+                yield self.prepare_input_and_user(sequences), [i[0] for i in sequence[seq_lengths[0]:]]
             else:
-                yield self.prepare_input_with_user_lstm(sequences)
+                yield self.prepare_input_and_user(sequences)
 
     def get_train_data(self):
         train_data, n_train_user = self.load_data('./data/train_set_sequences(extend)')
@@ -198,7 +215,6 @@ class DataHandler(object):
         training_set = self.gen_mini_batch_lstm(self.sequence_generator(train_data))
         validation_set = self.gen_mini_batch_lstm(self.sequence_generator(val_data))
         return training_set, validation_set, n_train_user, n_val_user
-
 
     def get_user_data(self):
         user_data, n_users = self.load_data('./data/user_set')
