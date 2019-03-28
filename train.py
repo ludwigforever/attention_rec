@@ -29,7 +29,7 @@ def main():
     n_usercode = 29
     max_length = 20
     n_hidden_units = 64
-    train_epochs = 30
+    train_epochs = 40
 
     dataset = DataHandler(batch_size, max_length, n_movies, n_genres, n_usercode)
     training_set, validation_set, n_train_user, n_val_user = dataset.get_train_data()
