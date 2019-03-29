@@ -1089,7 +1089,7 @@ class LSTM_improve(Layer):
         
         h = o * K.tanh(c)
         
-        return return c, [h, c]
+        return c, [h, c]
     
     def call(self, inputs): # 定义正式执行的函数
         
