@@ -1009,3 +1009,96 @@ class multi_head(Layer):
       
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.units)
+
+class LSTM_improve(Layer):
+
+    def __init__(self, units, dropout=0., **kwargs):
+        self.units = units # 输出维度
+        self.dropout = min(1., max(0., dropout))
+        self.supports_masking = True
+        super(LSTM_improve, self).__init__(**kwargs)
+    
+    def compute_mask(self, inputs, mask):
+        if isinstance(mask, list):
+            mask = mask[0]
+        output_mask =  None
+        return output_mask
+    
+    def build(self, input_shape): # 定义可训练参数
+        
+        self.kernel = self.add_weight(shape=(input_dim, self.units * 4),
+                                      name='kernel',
+                                      initializer='glorot_normal',
+                                      trainable=True)
+        
+        self.recurrent_kernel = self.add_weight(shape=(self.units, self.units * 4),
+                                                name='recurrent_kernel',
+                                                initializer='glorot_normal',
+                                                trainable=True)
+        
+        self.bias = self.add_weight(shape=(self.units * 4,),
+                                    name='bias',
+                                    initializer='glorot_normal',
+                                    trainable=True)
+        
+        
+        
+        self.kernel_i = self.kernel[:, :self.units]
+        self.kernel_f = self.kernel[:, self.units: self.units * 2]
+        self.kernel_c = self.kernel[:, self.units * 2: self.units * 3]
+        self.kernel_o = self.kernel[:, self.units * 3:]
+
+        self.recurrent_kernel_i = self.recurrent_kernel[:, :self.units]
+        self.recurrent_kernel_f = (
+            self.recurrent_kernel[:, self.units: self.units * 2])
+        self.recurrent_kernel_c = (
+            self.recurrent_kernel[:, self.units * 2: self.units * 3])
+        self.recurrent_kernel_o = self.recurrent_kernel[:, self.units * 3:]
+        
+        self.bias_i = self.bias[:self.units]
+        self.bias_f = self.bias[self.units: self.units * 2]
+        self.bias_c = self.bias[self.units * 2: self.units * 3]
+        self.bias_o = self.bias[self.units * 3:]
+        
+        
+
+    def step_do(self, step_in, states): # 定义每一步的迭代
+        
+        in_value = step_in
+        if 0 < self.dropout < 1.:
+            self._dropout_mask = K.in_train_phase(K.dropout(K.ones_like(step_in), self.dropout), K.ones_like(step_in))
+        if 0 < self.dropout < 1.:
+            in_value = step_in * self._dropout_mask
+        h_tm1 = states[0]
+        c_tm1 = states[1]
+        
+        x_i = K.dot(in_value, self.kernel_i)
+        x_f = K.dot(in_value, self.kernel_f)
+        x_c = K.dot(in_value, self.kernel_c)
+        x_o = K.dot(in_value, self.kernel_o)
+        
+        x_i = K.bias_add(x_i, self.bias_i)
+        x_f = K.bias_add(x_f, self.bias_f)
+        x_c = K.bias_add(x_c, self.bias_c)
+        x_o = K.bias_add(x_o, self.bias_o)
+        
+        i = K.sigmoid(x_i + K.dot(h_tm1, self.recurrent_kernel_i))
+        f = K.sigmoid(x_f + K.dot(h_tm1, self.recurrent_kernel_f))
+        c = f * c_tm1 + i * K.tanh(x_c + K.dot(h_tm1, self.recurrent_kernel_c))
+        o = K.sigmoid(x_o + K.dot(h_tm1, self.recurrent_kernel_o))
+        
+        h = o * K.tanh(c)
+        
+        return return c, [h, c]
+    
+    def call(self, inputs): # 定义正式执行的函数
+        
+        init_states = [K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1])), K.zeros((K.shape(inputs)[0],K.shape(inputs)[-1]))] # 定义初始态(全零)
+        
+        
+        outputs = K.rnn(self.step_do, inputs, init_states, unroll=False) # 循环执行step_do函数
+        
+        return outputs[1]
+      
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], input_shape[1], self.units)
