@@ -19,7 +19,7 @@ from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from keras.metrics import top_k_categorical_accuracy
-from custom_layer import multi_head, SelfAttention, Bi_Self_RNN, similar_RNN, similar_RNN_multi, genres_similar, weight_RNN_multi
+from custom_layer import multi_head, SelfAttention, LSTM_improve
 
 def main():
     batch_size = 15
@@ -43,7 +43,8 @@ def main():
     noise = GaussianNoise(0.01)(inputs)
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
 
-    lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
+    #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
+    lstm_improve = LSTM_improve(n_hidden_units, name='LSTM')(embedding)
     cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=True)(embedding)
     #multi = similar_RNN_multi(n_hidden_units, name='similar_RNN_multi')(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
@@ -51,7 +52,7 @@ def main():
     #similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
     #similar=genres_similar(n_hidden_units, name='genres_similar')(embedding)
     #weight=weight_RNN_multi(n_hidden_units, name='weight_RNN_multi')(embedding)
-    lstm_cov=Concatenate(axis=-1, name='lstm_cov')([lstm,cov])
+    lstm_cov=Concatenate(axis=-1, name='lstm_cov')([lstm_improve,cov])
     multi=multi_head(n_hidden_units, name='multi_head')(lstm_cov)
     #out = Activation('relu')(multi)
 
