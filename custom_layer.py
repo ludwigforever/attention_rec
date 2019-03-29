@@ -1026,7 +1026,7 @@ class LSTM_improve(Layer):
     
     def build(self, input_shape): # 定义可训练参数
         
-        self.kernel = self.add_weight(shape=(input_dim, self.units * 4),
+        self.kernel = self.add_weight(shape=(input_shape[-1], self.units * 4),
                                       name='kernel',
                                       initializer='glorot_normal',
                                       trainable=True)
