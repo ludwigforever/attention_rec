@@ -40,7 +40,7 @@ def main():
 
     #inputs1 = Input(shape=(max_length, n_usercode))
     inputs = Input(shape=(max_length, n_movies + n_genres))# + n_usercode))
-    noise = GaussianNoise(0.02)(inputs)
+    noise = GaussianNoise(0.01)(inputs)
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
 
     lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
@@ -63,7 +63,8 @@ def main():
     opti=keras.optimizers.Adam(lr=0.005)
     finalmodel.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[top_10_CCE])
     '''
-    finalmodel.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[top_10_CCE])
+    finalmodel.compile(loss='binary_crossentropy', optimizer='adam', metrics=[top_10_CCE])
+    #finalmodel.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[top_10_CCE])
 
     start_time = time.time()
 
