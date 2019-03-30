@@ -41,7 +41,7 @@ def main():
     #inputs1 = Input(shape=(max_length, n_usercode))
     inputs = Input(shape=(max_length, n_movies + n_genres))# + n_usercode))
     noise = GaussianNoise(0.01)(inputs)
-    embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
+    embedding = Dense(n_hidden_units, activation='tanh', name='embedding', kernel_regularizer=regularizers.l2(0.01), bias_regularizer=regularizers.l2(0.01))(noise)
 
     #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
     lstm_improve = LSTM_improve(n_hidden_units, name='LSTM')(embedding)
