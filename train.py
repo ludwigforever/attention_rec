@@ -14,7 +14,7 @@ from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Activation, Dropout, Flatten,Average, Multiply, Dot, Input, Activation, Lambda, Flatten, Embedding,Concatenate, Layer,Reshape
 
 
-from keras.layers import LSTM, recurrent, Conv1D, GaussianNoise
+from keras.layers import LSTM, recurrent, Conv1D, GaussianNoise, GRU
 from keras.utils import np_utils
 from keras.models import load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
