@@ -27,7 +27,7 @@ def main():
     n_users = 6040
     n_genres = 18
     n_usercode = 29
-    max_length = 20
+    max_length = 30
     n_hidden_units = 64
     train_epochs = 50
 
@@ -43,9 +43,9 @@ def main():
     noise = GaussianNoise(0.01)(inputs)
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
 
-    gru = GRU(n_hidden_units, name='GRU', return_sequences = True)(embedding)
+    #gru = GRU(n_hidden_units, name='GRU', return_sequences = True)(embedding)
     #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
-    #lstm_improve = LSTM_improve(n_hidden_units, name='LSTM')(embedding)
+    lstm_improve = LSTM_improve(n_hidden_units, name='LSTM')(embedding)
     cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=True)(embedding)
     #multi = similar_RNN_multi(n_hidden_units, name='similar_RNN_multi')(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
@@ -53,7 +53,7 @@ def main():
     #similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
     #similar=genres_similar(n_hidden_units, name='genres_similar')(embedding)
     #weight=weight_RNN_multi(n_hidden_units, name='weight_RNN_multi')(embedding)
-    lstm_cov=Concatenate(axis=-1, name='lstm_cov')([gru,cov])
+    lstm_cov=Concatenate(axis=-1, name='lstm_cov')([lstm_improve,cov])
     multi=multi_head(n_hidden_units, name='multi_head')(lstm_cov)
     #out = Activation('relu')(multi)
 
