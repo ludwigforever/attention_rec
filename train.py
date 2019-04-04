@@ -40,7 +40,7 @@ def main():
 
     #inputs1 = Input(shape=(max_length, n_usercode))
     inputs = Input(shape=(max_length, n_movies + n_genres))# + n_usercode))
-    noise = GaussianNoise(0.001)(inputs)
+    noise = GaussianNoise(0.0)(inputs)
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
 
     #gru = GRU(n_hidden_units, name='GRU', return_sequences = True)(embedding)
