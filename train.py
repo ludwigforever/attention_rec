@@ -44,7 +44,7 @@ def main():
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
 
     #gru = GRU(n_hidden_units, name='GRU', return_sequences = True)(embedding)
-    lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
+    #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
     #lstm_improve = LSTM_improve(n_hidden_units, name='LSTM')(embedding)
     #cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=True)(embedding)
     #multi = similar_RNN_multi(n_hidden_units, name='similar_RNN_multi')(embedding)
@@ -54,10 +54,10 @@ def main():
     #similar=genres_similar(n_hidden_units, name='genres_similar')(embedding)
     #weight=weight_RNN_multi(n_hidden_units, name='weight_RNN_multi')(embedding)
     #lstm_cov=Concatenate(axis=-1, name='lstm_cov')([lstm_improve,cov])
-    #multi=multi_head(n_hidden_units, name='multi_head')(lstm_cov)
+    multi=multi_head(n_hidden_units, name='multi_head')(embedding)
     #out = Activation('relu')(multi)
 
-    out = Dense(n_movies, activation='softmax', name='out')(lstm)
+    out = Dense(n_movies, activation='softmax', name='out')(multi)
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
