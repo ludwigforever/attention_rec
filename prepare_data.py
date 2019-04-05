@@ -73,7 +73,17 @@ class DataHandler(object):
             seq_features = np.array(list(map(lambda x: self.get_features(x), in_seq)))
             X[i, self.max_length - len(in_seq):, :] = seq_features
             one_hot_encoding = np.zeros(self.n_movies)
-            one_hot_encoding[target[0]] = 1
+            #one_hot_encoding[target[0]] = 1
+            one_hot_encoding[target[0][0]] = 1
+            one_hot_encoding[target[1][0]] = 1
+            one_hot_encoding[target[2][0]] = 1
+            one_hot_encoding[target[3][0]] = 1
+            one_hot_encoding[target[4][0]] = 1
+            one_hot_encoding[target[5][0]] = 1
+            one_hot_encoding[target[6][0]] = 1
+            one_hot_encoding[target[7][0]] = 1
+            one_hot_encoding[target[8][0]] = 1
+            one_hot_encoding[target[9][0]] = 1
             Y[i] = one_hot_encoding
         return (X, Y)
 
@@ -149,7 +159,7 @@ class DataHandler(object):
                 if not test:
                     # print('next')
                     # print(sequence)
-                    seq_lengths = sorted(random.sample(range(5, len(sequence)),
+                    seq_lengths = sorted(random.sample(range(2, len(sequence)-9),
                                                        min([batch_size - j,
                                                             len(sequence) - 2,
                                                             max_reuse_sequence])))
@@ -159,7 +169,7 @@ class DataHandler(object):
                 skipped_seq = 0
                 for l in seq_lengths:
                     start = max(0, l - self.max_length)  # sequences cannot be longer than self.max_lenght
-                    target = sequence[l]
+                    target = sequence[l:]
                     sequences.append([user_id, sequence[start:l], target])
                 j += len(seq_lengths)
 
