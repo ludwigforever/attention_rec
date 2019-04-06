@@ -69,7 +69,7 @@ def main():
     def bce_withoutmean(y_true, y_pred):
         return K.binary_crossentropy(y_true, y_pred)
 
-    finalmodel.compile(loss='bce_withoutmean', optimizer='adam', metrics=[top_10_CCE])
+    finalmodel.compile(loss=bce_withoutmean, optimizer='adam', metrics=[top_10_CCE])
     #finalmodel.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[top_10_CCE])
 
     start_time = time.time()
