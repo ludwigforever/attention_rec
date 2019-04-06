@@ -67,7 +67,7 @@ def main():
     finalmodel.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[top_10_CCE])
     '''
     def bce_withoutmean(y_true, y_pred):
-        return K.binary_crossentropy(y_true, y_pred)
+        return K.sum(K.binary_crossentropy(y_true, y_pred), axis=-1)
 
     finalmodel.compile(loss=bce_withoutmean, optimizer='adam', metrics=[top_10_CCE])
     #finalmodel.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[top_10_CCE])
