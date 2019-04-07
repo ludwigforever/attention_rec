@@ -22,7 +22,7 @@ from keras.metrics import top_k_categorical_accuracy
 from custom_layer import multi_head, SelfAttention, LSTM_improve
 
 def main():
-    batch_size = 9
+    batch_size = 15
     n_movies = 3706
     n_users = 6040
     n_genres = 18
@@ -44,20 +44,21 @@ def main():
     embedding = Dense(n_hidden_units, activation='tanh', name='embedding')(noise)
 
     #gru = GRU(n_hidden_units, name='GRU', return_sequences = True)(embedding)
-    #lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = False)(embedding)
-    lstm_improve = LSTM_improve(n_hidden_units, name='LSTM')(embedding)
-    cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=True)(embedding)
+    lstm=LSTM(n_hidden_units, name='LSTM', return_sequences = True)(embedding)
+    lstm2=LSTM(n_hidden_units, name='LSTM2', return_sequences = False)(lstm)
+    #lstm_improve = LSTM_improve(n_hidden_units, name='LSTM')(embedding)
+    #cov = Conv1D(n_hidden_units, 3, strides=1, padding='causal', data_format='channels_last', dilation_rate=1, activation='tanh', use_bias=True)(embedding)
     #multi = similar_RNN_multi(n_hidden_units, name='similar_RNN_multi')(embedding)
     # self_rnn_out = Self_RNN(n_hidden_units, name='Self_RNN')(embedding)
     #bi_self_rnn_out = Bi_Self_RNN(n_hidden_units, name='Bi_Self_RNN')(embedding)
     #similar = similar_RNN(n_hidden_units, name='similar_RNN')(embedding)
     #similar=genres_similar(n_hidden_units, name='genres_similar')(embedding)
     #weight=weight_RNN_multi(n_hidden_units, name='weight_RNN_multi')(embedding)
-    lstm_cov=Concatenate(axis=-1, name='lstm_cov')([lstm_improve,cov])
-    multi=multi_head(n_hidden_units, name='multi_head')(lstm_cov)
+    #lstm_cov=Concatenate(axis=-1, name='lstm_cov')([lstm_improve,cov])
+    #multi=multi_head(n_hidden_units, name='multi_head')(lstm_cov)
     #out = Activation('relu')(multi)
 
-    out = Dense(n_movies, activation='softmax', name='out')(multi)
+    out = Dense(n_movies, activation='softmax', name='out')(lstm2)
 
     finalmodel = Model(input=inputs, output=out)
     finalmodel.summary()
