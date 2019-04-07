@@ -171,7 +171,7 @@ class DataHandler(object):
                 skipped_seq = 0
                 for l in seq_lengths:
                     start = max(0, l - self.max_length)  # sequences cannot be longer than self.max_lenght
-                    target = sequence[l:]
+                    target = sequence[l]
                     sequences.append([user_id, sequence[start:l], target])
                 j += len(seq_lengths)
 
